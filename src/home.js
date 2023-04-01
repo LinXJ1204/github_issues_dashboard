@@ -35,11 +35,7 @@ export function Home(){
                   <span className="text"><Link to='/newtask'>New Task</Link></span>
               </div>
             </div>
-
-            <div className="table-data">
-              <Outlet />
-              
-            </div>
+            <Outlet />
           </main>
         </section>
         </div>

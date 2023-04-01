@@ -572,9 +572,52 @@ body {
 }
 
 
+#content main .table-data .taskinfo {
+	flex-grow: 1;
+	flex-basis: 500px;
+	min-width:70%;
+}
 
+#content main .table-data .taskinfo  {
+	padding-bottom: 12px;
+	font-size: 20px;
+	text-align: left;
+	border-bottom: 1px solid var(--grey);
+}
+#content main .table-data .taskinfo  {
+	padding: 16px 0;
+}
+#content main .table-data .taskinfo {
+	display: flex;
+	align-items: center;
+	grid-gap: 12px;
+	padding-left: 6px;
+	padding-right: 20px;
+}
 
+#content main .table-data .taskinfo .taskinfoitem {
+	display: flex;
+	margin-bottom: 20px;
+	margin-top: 10px;
+}
 
+#content main .table-data .taskinfo .taskinfoitem span {
+	align-items: center;
+	grid-gap: 12px;
+	padding-left: 20px;
+	min-inline-size: 200px;
+}
+
+#content main .table-data .taskinfo button {
+	text-align: center;
+	grid-gap: 12px;
+	min-inline-size: 100px;
+}
+
+#content main .table-data .taskedit {
+	text-align: center;
+	min-width: 25%;
+}
 
 
 
