@@ -10,7 +10,7 @@ export function loginwithgithub(){
   }
 
 export async function getissues(page){
-    store.dispatch(task.actions.initialtasklist);
+    store.dispatch(task.actions.initialtasklist());
     var token = sessionStorage.getItem("token");
     if(token!='undefined'&&token){
         await fetch("https://api.github.com/issues?filter=repos"+"&per_page=10"+"&page="+page.toString(),{
@@ -24,9 +24,9 @@ export async function getissues(page){
         }).then((data)=>{
             console.log(data);
             const tasklist = data.map(item=>{
-                return {'id':item['id'],'title':item['title'], 'state':item['state'], 'created_at':item['created_at'], 'repository':item['repository']["name"],'label':item['labels'][0]['name']}
+                return {'id':item['id'],'title':item['title'], 'state':item['state'], 'created_at':item['created_at'], 'repository':item['repository']["name"],'owner_repository':item['repository']["full_name"],'label':item['labels'][0]['name']}
             })
-            var repolist = tasklist.map(item=>{return item['repository']})
+            var repolist = tasklist.map(item=>{return item['owner_repository']})
             repolist = [...new Set(repolist)]
             console.log(repolist);
             store.dispatch(task.actions.addtask(tasklist));
@@ -46,6 +46,7 @@ export async function getaccesstoken(){
     if(token!='undefined'&&token){
         console.log(token)
         getissues(1);
+
         return token;
     }else{
         token = await fetch("http://localhost:4000/gettoken?code="+code,{
@@ -63,3 +64,29 @@ export async function getaccesstoken(){
     
 }
 
+export async function submit_new_task(){
+    var title = document.getElementById("tasktitle").value;
+    var body= document.getElementById("taskbody").value;
+    var repo = document.getElementById("repolist").value;
+    var token = sessionStorage.getItem("token");
+    if(title==''){
+        window.alert("Title can't be empty")
+    }else if(body.split(' ').length<30){
+        window.alert("The minimum amount of word is 30.")
+    }else{
+        fetch("https://api.github.com/repos/"+repo+"/issues",{
+            method: "POST",
+            headers: {
+                'Authorization': "Bearer " + token
+            },
+            body: JSON.stringify({
+                "title": title,
+                "labels": ["Open"],
+                "body": body
+            })
+        }).then((res)=>{
+            window.alert("Adding is Successful.")
+        })
+    }
+    
+}

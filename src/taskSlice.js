@@ -20,6 +20,9 @@ export const task = createSlice({
         },
         setrepo: (state, actions)=>{
             return {...state, repo:actions.payload}
+        },
+        setlock: (state, actions)=>{
+            return {...state, lock:actions.payload}
         }
     }
 })

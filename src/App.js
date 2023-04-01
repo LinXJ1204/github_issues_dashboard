@@ -8,7 +8,6 @@ import { getaccesstoken } from './github';
 import { store } from './store';
 import { useSelector } from "react-redux";
 
-//66eee27c3dc589965d1ba93481703481af57199e
 
 
 /* const query = `

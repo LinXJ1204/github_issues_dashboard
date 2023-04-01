@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 
 export function Task(){
     var tasklist = useSelector(()=>{return store.getState()['task'].tasklist})
+    console.log(tasklist);
     return(
         <div className="tasklist">
             <div className="head">
