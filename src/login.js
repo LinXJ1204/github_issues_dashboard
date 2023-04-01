@@ -6,7 +6,6 @@ export function Login(){
             <div className="login">
                 <button onClick={loginwithgithub}>Login</button>
             </div>
-              
         </div>
         
     )

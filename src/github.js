@@ -9,8 +9,10 @@ export function loginwithgithub(){
     window.location.assign("https://github.com/login/oauth/authorize?"+"client_id="+client_id+"&scope=repo")
   }
 
-export async function getissues(page){
-    store.dispatch(task.actions.initialtasklist());
+export async function getissues(page=1){
+    if(page==1){
+        store.dispatch(task.actions.initialtasklist());
+    }
     var token = sessionStorage.getItem("token");
     if(token!=='undefined'&&token){
         await fetch("https://api.github.com/issues?filter=repos"+"&per_page=10"+"&page="+page.toString(),{
@@ -38,6 +40,22 @@ export async function getissues(page){
 
 }
 
+async function getuser(){
+    console.log('test')
+    var token = sessionStorage.getItem("token");
+    fetch("https://api.github.com/user",{
+        method: "GET",
+        headers: {
+            'Authorization': "Bearer " + token,
+            'accept': "application/json"
+        }
+    }).then((res)=>{
+        return res.json();
+    }).then((data)=>{
+        sessionStorage.setItem('user', data['login'])
+    })
+}
+
 export async function getaccesstoken(){
     var getUrlString = window.location.href;
     var url = new URL(getUrlString);
@@ -45,8 +63,7 @@ export async function getaccesstoken(){
     var token = sessionStorage.getItem("token");
     if(token!=='undefined'&&token){
         console.log(token)
-        getissues(1);
-
+        getissues();
         return token;
     }else{
         token = await fetch("http://localhost:4000/gettoken?code="+code,{
@@ -56,7 +73,8 @@ export async function getaccesstoken(){
         }).then((data)=>{
             console.log(data);
             sessionStorage.setItem("token", data.access_token)
-            getissues(1);
+            getissues();
+            getuser();
             return data.access_token
         })
         return token;
@@ -107,7 +125,7 @@ export async function edit_task(taskedit){
         }).then((res)=>{
             window.alert("editing is Successful.")
             window.location = ('/task');
-        })
+         })
 }
 
 export async function delete_task(taskedit){
@@ -124,4 +142,44 @@ export async function delete_task(taskedit){
         window.alert("Delete is Successful.")
         window.location = ('/task');
     })
+}
+
+export async function search_issue(searchpage=1){
+    if(searchpage==1){
+        store.dispatch(task.actions.initialtasklist());
+    }
+    var keyword;
+    try{
+        keyword = document.getElementById("search_keyword").value;
+    }
+    catch{
+        window.location = ('/task');
+    }
+    var user = sessionStorage.getItem("user");
+    var token = sessionStorage.getItem("token");
+    console.log(keyword)
+    if(keyword==""||keyword==undefined){
+        window.location = ('/task');
+    }
+    fetch("https://api.github.com/search/issues?q="+encodeURIComponent(keyword+' involves:'+user)+"&per_page=10"+"&page="+searchpage,{
+        method: "GET",
+        headers: {
+            'Authorization': "Bearer " + token,
+            'Accept': "application/vnd.github.text-match+json"
+        }
+    }).then((res)=>{
+        return res.json()
+    }).then((data)=>{
+        console.log(data['items']);
+        data = data['items']
+        const tasklist = data.map(item=>{
+            return {'id':item['number'],'title':item['title'], 'state':item['state'], 'created_at':item['created_at'], 'repository':item['repository_url'].split('/')[5],'owner_repository':item['repository_url'].split('/')[4]+"/"+item['repository_url'].split('/')[5],'label':item['labels'][0]['name'],"body":item['body']}
+        })
+        var repolist = tasklist.map(item=>{return item['owner_repository']})
+        repolist = [...new Set(repolist)]
+        console.log(repolist);
+        store.dispatch(task.actions.addtask(tasklist));
+        store.dispatch(task.actions.setrepo(repolist));
+    })
+    return 1;
 }
