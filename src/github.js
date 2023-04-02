@@ -76,7 +76,7 @@ export async function getaccesstoken(){
         store.dispatch(task.actions.setlabel(''));
         return token;
     }else{
-        token = await fetch("http://localhost:4000/gettoken?code="+code,{
+        token = await fetch("http://34.80.235.124:4000/gettoken?code="+code,{
             method: "GET"
         }).then((response)=>{
             return response.json();

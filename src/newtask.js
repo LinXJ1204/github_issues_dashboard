@@ -2,14 +2,7 @@ import { Reposelector } from "./reposelect"
 import { submit_new_task } from "./github";
 
 export function Newtask(){
-    async function test(){
-        var title = document.getElementById("tasktitle").value;
-        var body= document.getElementById("taskbody").value;
-        var repo = document.getElementById("repolist").value;
-        console.log(title, body, repo)
-        var token = sessionStorage.getItem("token");
-        
-    }
+
 
     return(
         <div className="table-data">
