@@ -2,12 +2,15 @@ import { store } from "./store"
 import { task } from "./taskSlice"
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom"
+import { getissues } from "./github";
+import { useInView, InView } from 'react-intersection-observer';
+
 
 
 
 export function Task(){
-    var tasklist = useSelector(()=>{return store.getState()['task'].tasklist})
-    console.log(tasklist);
+    var tasklist = useSelector(()=>{return store.getState()['task'].tasklist});
+    const { ref, inView } = useInView({delay:2000});
     return(
         <div className="table-data">
             <div className="tasklist">
@@ -20,7 +23,7 @@ export function Task(){
                     <thead>
                     <tr>
                         <th>Title</th>
-                        <th>Create Date</th>
+                        <th >Create Date</th>
                         <th>Repository</th>
                         <th>Status</th>
                     </tr>
@@ -37,9 +40,12 @@ export function Task(){
                         )
                     })}
                     </tbody>
+                    
                 </table>
+                
+                
             </div>
-              
+            
         </div>
         
     )

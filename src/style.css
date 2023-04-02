@@ -619,6 +619,9 @@ body {
 	min-width: 25%;
 }
 
+#content main .buffer {
+	height: 150px;
+}
 
 
 

@@ -9,7 +9,7 @@ export function loginwithgithub(){
     window.location.assign("https://github.com/login/oauth/authorize?"+"client_id="+client_id+"&scope=repo")
   }
 
-export async function getissues(page=1){
+export async function getissues(page=1,direct='desc'){
     if(page==1){
         store.dispatch(task.actions.initialtasklist());
     }
@@ -25,6 +25,9 @@ export async function getissues(page=1){
             return response.json();
         }).then((data)=>{
             console.log(data);
+            if(data.length==0){
+                store.dispatch(task.actions.setlock(true));
+            }
             const tasklist = data.map(item=>{
                 return {'id':item['number'],'title':item['title'], 'state':item['state'], 'created_at':item['created_at'], 'repository':item['repository']["name"],'owner_repository':item['repository']["full_name"],'label':item['labels'][0]['name'],"body":item['body']}
             })
@@ -113,7 +116,12 @@ export async function edit_task(taskedit){
     var title = document.getElementById("taskedittitle").value;
     var body= document.getElementById("taskeditbody").value;
     var token = sessionStorage.getItem("token");
-    fetch("https://api.github.com/repos/"+taskedit['owner_repository']+"/issues/"+taskedit['id'],{
+    if(title===''){
+        window.alert("Title can't be empty")
+    }else if(body.split(' ').length<30){
+        window.alert("The minimum amount of word is 30.")
+    }else{
+        fetch("https://api.github.com/repos/"+taskedit['owner_repository']+"/issues/"+taskedit['id'],{
             method: "PATCH",
             headers: {
                 'Authorization': "Bearer " + token
@@ -126,6 +134,8 @@ export async function edit_task(taskedit){
             window.alert("editing is Successful.")
             window.location = ('/task');
          })
+    }
+    
 }
 
 export async function delete_task(taskedit){
