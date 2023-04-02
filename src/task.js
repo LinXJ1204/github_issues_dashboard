@@ -2,15 +2,30 @@ import { store } from "./store"
 import { task } from "./taskSlice"
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom"
-import { getissues } from "./github";
+import { getissues, search_issue } from "./github";
 import { useInView, InView } from 'react-intersection-observer';
+import { directionwrite } from "./github";
 
 
 
 
 export function Task(){
     var tasklist = useSelector(()=>{return store.getState()['task'].tasklist});
-    const { ref, inView } = useInView({delay:2000});
+    var mode = store.getState()['task'].mode;
+    function set_status(){
+        var status = document.getElementById("status_select").value;
+        if(status!="All"){
+            store.dispatch(task.actions.setlabel(status));
+        }else{
+            store.dispatch(task.actions.setlabel(''));
+        }
+        if(mode){
+            getissues();
+        }else{
+            search_issue();
+        }
+        
+    }
     return(
         <div className="table-data">
             <div className="tasklist">
@@ -23,9 +38,20 @@ export function Task(){
                     <thead>
                     <tr>
                         <th>Title</th>
-                        <th >Create Date</th>
+                        <th><div>Create Date<img src={require("./img/angle-small-down.png")} onClick={()=>{
+                                store.dispatch(task.actions.setdiretion());
+                                directionwrite([]);
+                                }}/></div></th>
                         <th>Repository</th>
-                        <th>Status</th>
+                        <th>
+                            Status
+                            <select id="status_select" onChange={set_status}>
+                                <option value="All">All</option>
+                                <option value="Open">Open</option>
+                                <option value="In Progress">In Progess</option>
+                                <option value="Done">Done</option>
+                            </select>
+                        </th>
                     </tr>
                     </thead>
                     <tbody>

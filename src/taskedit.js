@@ -6,13 +6,13 @@ export function Taskedit(props){
     return(
         <div className="taskedit">
             <form action="" method="post" className="taskeditform"> 
-                <div>
-                    <span>Task Title</span>
+                <div id="taskedittitled">
+                    <p>Task Title</p>
                     <input id="taskedittitle" type="text" name="taskedittitle" />
                 </div>
-                <div>
-                    <span>Body</span>
-                    <input id="taskeditbody" type="text" name="taskeditbody"/>
+                <div id="taskeditbodyd">
+                    <p>Body</p>
+                    <textarea id="taskeditbody" rows={20} cols={35}></textarea>
                 </div>
                 <div>
                     <input type="button" className="button" value="Edit" onClick={()=>edit_task(task)}/>

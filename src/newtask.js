@@ -14,22 +14,27 @@ export function Newtask(){
     return(
         <div className="table-data">
             <div className="newtask">
-                <form action="" method="post" className="basic-grey"> 
-                    <div>
-                        <span>Task Title</span>
-                        <input id="tasktitle" type="text" name="tasktitle" />
-                    </div>
-                    <div>
-                        <span>Body</span>
-                        <input id="taskbody" type="text" name="taskbody"/>
-                    </div>
-                    <div>
-                        <span>Repository</span>
-                        <Reposelector/>
-                    </div>
-                    <div>
-                        <input type="button" className="button" value="Send" onClick={submit_new_task} />
-                    </div>
+                <form action="" method="post" className="basic-grey">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Task Title</td>
+                                <td><input id="tasktitle" type="text" name="tasktitle" /></td>
+                            </tr>
+                            <tr>
+                                <td><span>Body</span></td>
+                                <td><textarea id="taskbody" rows={10} cols={35}></textarea></td>
+                            </tr>
+                            <tr>
+                                <td><span>Repository</span></td>
+                                <td><Reposelector/></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><input type="button" className="button" value="Send" onClick={submit_new_task} /></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </form>
             </div>
               

@@ -1,4 +1,3 @@
-import { redirect } from "react-router-dom";
 import { store } from "./store";
 import { task } from "./taskSlice";
 
@@ -9,22 +8,31 @@ export function loginwithgithub(){
     window.location.assign("https://github.com/login/oauth/authorize?"+"client_id="+client_id+"&scope=repo")
   }
 
-export async function getissues(page=1,direct='desc'){
+export function directionwrite(tasklist){
+    const direction = store.getState()['task'].direction;
+    if(direction){
+        store.dispatch(task.actions.addtask(tasklist));
+    }else{
+        store.dispatch(task.actions.addtaskreverse(tasklist));
+    }
+}
+
+export async function getissues(page=1){
     if(page==1){
         store.dispatch(task.actions.initialtasklist());
     }
+    var label = store.getState()["task"].label;
     var token = sessionStorage.getItem("token");
     if(token!=='undefined'&&token){
-        await fetch("https://api.github.com/issues?filter=repos"+"&per_page=10"+"&page="+page.toString(),{
+        await fetch("https://api.github.com/issues?filter=repos"+"&per_page=10"+"&page="+page.toString()+"&labels="+label,{
             method: "GET",
             headers: {
                 'Authorization': "Bearer " + token,
-                'accept': "application/vnd.github+json"
+                'accept': "application/json"
             }
         }).then((response)=>{
             return response.json();
         }).then((data)=>{
-            console.log(data);
             if(data.length==0){
                 store.dispatch(task.actions.setlock(true));
             }
@@ -32,9 +40,7 @@ export async function getissues(page=1,direct='desc'){
                 return {'id':item['number'],'title':item['title'], 'state':item['state'], 'created_at':item['created_at'], 'repository':item['repository']["name"],'owner_repository':item['repository']["full_name"],'label':item['labels'][0]['name'],"body":item['body']}
             })
             var repolist = tasklist.map(item=>{return item['owner_repository']})
-            repolist = [...new Set(repolist)]
-            console.log(repolist);
-            store.dispatch(task.actions.addtask(tasklist));
+            directionwrite(tasklist);
             store.dispatch(task.actions.setrepo(repolist));
         })
     }else{
@@ -44,7 +50,6 @@ export async function getissues(page=1,direct='desc'){
 }
 
 async function getuser(){
-    console.log('test')
     var token = sessionStorage.getItem("token");
     fetch("https://api.github.com/user",{
         method: "GET",
@@ -65,8 +70,10 @@ export async function getaccesstoken(){
     var code = url.searchParams.get('code');
     var token = sessionStorage.getItem("token");
     if(token!=='undefined'&&token){
-        console.log(token)
         getissues();
+        store.dispatch(task.actions.setmode(true));
+        store.dispatch(task.actions.setlock(false));
+        store.dispatch(task.actions.setlabel(''));
         return token;
     }else{
         token = await fetch("http://localhost:4000/gettoken?code="+code,{
@@ -74,7 +81,6 @@ export async function getaccesstoken(){
         }).then((response)=>{
             return response.json();
         }).then((data)=>{
-            console.log(data);
             sessionStorage.setItem("token", data.access_token)
             getissues();
             getuser();
@@ -157,8 +163,14 @@ export async function delete_task(taskedit){
 export async function search_issue(searchpage=1){
     if(searchpage==1){
         store.dispatch(task.actions.initialtasklist());
+        store.dispatch(task.actions.setmode(false));
+        store.dispatch(task.actions.searchpageinitial());
     }
     var keyword;
+    var label = store.getState()["task"].label;
+    if(label!=""){
+        label = " label:"+label;
+    }
     try{
         keyword = document.getElementById("search_keyword").value;
     }
@@ -167,11 +179,10 @@ export async function search_issue(searchpage=1){
     }
     var user = sessionStorage.getItem("user");
     var token = sessionStorage.getItem("token");
-    console.log(keyword)
     if(keyword==""||keyword==undefined){
         window.location = ('/task');
     }
-    fetch("https://api.github.com/search/issues?q="+encodeURIComponent(keyword+' involves:'+user)+"&per_page=10"+"&page="+searchpage,{
+    fetch("https://api.github.com/search/issues?q="+encodeURIComponent(keyword+' user:'+user+label)+"&per_page=10"+"&page="+searchpage,{
         method: "GET",
         headers: {
             'Authorization': "Bearer " + token,
@@ -180,15 +191,16 @@ export async function search_issue(searchpage=1){
     }).then((res)=>{
         return res.json()
     }).then((data)=>{
-        console.log(data['items']);
+        if(data['items'].length==0){
+            store.dispatch(task.actions.setlock(true));
+        }
         data = data['items']
         const tasklist = data.map(item=>{
             return {'id':item['number'],'title':item['title'], 'state':item['state'], 'created_at':item['created_at'], 'repository':item['repository_url'].split('/')[5],'owner_repository':item['repository_url'].split('/')[4]+"/"+item['repository_url'].split('/')[5],'label':item['labels'][0]['name'],"body":item['body']}
         })
         var repolist = tasklist.map(item=>{return item['owner_repository']})
         repolist = [...new Set(repolist)]
-        console.log(repolist);
-        store.dispatch(task.actions.addtask(tasklist));
+        directionwrite(tasklist);
         store.dispatch(task.actions.setrepo(repolist));
     })
     return 1;
