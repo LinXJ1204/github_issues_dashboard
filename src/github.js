@@ -4,7 +4,7 @@ import { task } from "./taskSlice";
 
 
 export function loginwithgithub(){
-    const client_id = "b34fb685156a7e9fee22";
+    const client_id = "ff036409fb179ec54d04";
     window.location.assign("https://github.com/login/oauth/authorize?"+"client_id="+client_id+"&scope=repo")
   }
 
@@ -81,6 +81,8 @@ async function getuser(){
     }).then((data)=>{
         sessionStorage.setItem('user', data['login']);
         getrepo(data['login']);
+    }).then(()=>{
+        
     })
 }
 
