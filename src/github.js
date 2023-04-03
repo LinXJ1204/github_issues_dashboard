@@ -49,6 +49,25 @@ export async function getissues(page=1){
 
 }
 
+async function getrepo(user){
+    const token = sessionStorage.getItem("token");
+    fetch("https://api.github.com/users/"+user+"/repos",{
+        method: "GET",
+        headers: {
+            'Authorization': "Bearer " + token,
+            'accept': "application/json"
+        }
+    }).then((res)=>{
+        return res.json();
+    }).then((data)=>{
+        const repolist = data.map(item=>{
+            return user+"/"+item['name'];
+        })
+        store.dispatch(task.actions.setrepo(repolist));
+    })
+}
+
+
 async function getuser(){
     var token = sessionStorage.getItem("token");
     fetch("https://api.github.com/user",{
@@ -60,7 +79,8 @@ async function getuser(){
     }).then((res)=>{
         return res.json();
     }).then((data)=>{
-        sessionStorage.setItem('user', data['login'])
+        sessionStorage.setItem('user', data['login']);
+        getrepo(data['login']);
     })
 }
 
