@@ -3,7 +3,6 @@ import { task } from "./taskSlice"
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom"
 import { getissues, search_issue } from "./github";
-import { useInView, InView } from 'react-intersection-observer';
 import { directionwrite } from "./github";
 
 
@@ -58,7 +57,7 @@ export function Task(){
                     {tasklist.map(item=>{
                         return (
                             <tr key={item['id']+item['repository']}>
-                                <td><p><Link to={"/task/"+item['id']} state={item}>{item['title']}</Link></p></td>
+                                <td><p className="tasktitle"><Link to={"/task/"+item['id']} state={item}>{item['title']}</Link></p></td>
                                 <td>{item['created_at'].slice(0,10)}</td>
                                 <td>{item['repository']}</td>
                                 <td>{item['label']}</td>

@@ -1,7 +1,6 @@
 import { Link, Outlet } from "react-router-dom"
-import { Task } from "./task"
 import { search_issue } from "./github"
-import { useInView, InView } from 'react-intersection-observer';
+import { useInView} from 'react-intersection-observer';
 import { store } from "./store";
 import { task } from "./taskSlice";
 import { getissues } from "./github";
@@ -9,26 +8,32 @@ import { getissues } from "./github";
 
 export function Home(){
     var mode = store.getState()['task'].mode;
-
+    var windowheight = window.innerHeight;
+    
     function autoloader(){
       const lock = store.getState()['task'].lock;
       var pageloader = store.getState()['task'].page;
       if(pageloader==1){
         store.dispatch(task.actions.nextpage());
-      }else if(!lock){
-        store.dispatch(task.actions.nextpage());
-        getissues(pageloader, 'desc');
+      }else{
+        if(!lock){
+          getissues(pageloader, 'desc');
+          store.dispatch(task.actions.nextpage());
+        }
       }
+      
     }
 
     function search_autoloader(){
       const lock = store.getState()['task'].lock;
       var pageloader = store.getState()['task'].searchpage;
       if(pageloader==1){
-        store.dispatch(task.actions.searchnextpage());
-      }else if(!lock){
-        store.dispatch(task.actions.searchnextpage());
-        search_issue(pageloader);
+        store.dispatch(task.actions.searchnextpage()); 
+      }else{
+        if(!lock){
+          search_issue(pageloader);
+          store.dispatch(task.actions.searchnextpage()); 
+        }
       }
     }
 
@@ -74,7 +79,7 @@ export function Home(){
                 </div>
               </div>
               <Outlet />
-              <div className="buffer"></div>
+              <div className="buffer" style={{height:windowheight/2.5}}></div>
               <div ref={ref}>{inView?(mode?autoloader():search_autoloader()):(1)}</div>
             </main>
           </section>

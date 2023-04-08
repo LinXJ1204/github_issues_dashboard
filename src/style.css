@@ -420,3 +420,15 @@ table thead tr img:hover {
 	height: 200px;
 	width: 350px;
 }
+
+.tasktitle a:hover{
+	color: #3C91E6;
+}
+
+.tasklistbtn a:hover{
+	color: #3C91E6;
+}
+
+.searchtask:hover{
+	color: #3C91E6;
+}

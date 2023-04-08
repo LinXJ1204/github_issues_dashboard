@@ -29,7 +29,7 @@ export function Taskinfo(){
                         <p style={{textAlign:'left'}}>{task['label']}</p>
                     </div>
                     <div className="taskinfoitem">
-                        <span>Conten</span>
+                        <span>Content</span>
                         <p style={{textAlign:'left'}}>{task['body']}</p>
                     </div>
                 </div>

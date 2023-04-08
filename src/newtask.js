@@ -2,8 +2,6 @@ import { Reposelector } from "./reposelect"
 import { submit_new_task } from "./github";
 
 export function Newtask(){
-
-
     return(
         <div className="table-data">
             <div className="newtask">
